@@ -1,0 +1,13 @@
+<h5 class="mb-2">Success! Please use this link:</h5>
+
+<h5 class="mb-4">
+  <a href="/{{shorten.shortId}}" target="_blank">http://localhost:3000/{{shorten.shortId}}</a>
+</h5>
+
+<input type="hidden" id="myInput" value="http://localhost:3000/{{shorten.shortId}}">
+
+<!-- The button used to copy the text -->
+<button class="btn btn-outline-primary" onclick="copyText()">Copy</button>
+
+
+<script src="/javascripts/result.js"></script>
