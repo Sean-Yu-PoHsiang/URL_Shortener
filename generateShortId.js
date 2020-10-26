@@ -1,7 +1,5 @@
 const mongoose = require('mongoose')
 
-const Shorten = require('./models/shorten.js')
-
 function isNumberIncluded(string) {
   const numbers = '1234567890'
   const array = string.split('')

@@ -1,6 +1,11 @@
+.text-box {
+  height: 50vh;
+  margin-top: 25vh;
+}
+
 #inPutUrl {
   border-style: solid;
-  width: 90%;
+  width: 90vw;
   max-width: 600px;
 }
 
