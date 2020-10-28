@@ -1,5 +1,6 @@
 const express = require('express')
 const router = express.Router()
+const fetch = require("node-fetch")
 
 const Shorten = require('../models/shorten.js')
 const generateShortId = require('../generateShortId.js')
@@ -18,43 +19,53 @@ router.get('/', async (req, res) => {
 router.post('/', async (req, res) => {
   const fullUrl = req.body.fullUrl
 
-  await Shorten.findOne({ fullUrl })
-    .lean()
-    .then(async (findFullUrl) => {
-      if (findFullUrl !== null) {
-        res.redirect(`/results/${findFullUrl.shortId}`)
+  await fetch(fullUrl, { method: 'get' })
+    .then(async (response) => {
+      //ok 代表狀態碼在範圍 200-299
+      if (response.ok) {
+        await Shorten.findOne({ fullUrl })
+          .lean()
+          .then(async (findFullUrl) => {
+            if (findFullUrl !== null) {
+              res.redirect(`/results/${findFullUrl.shortId}`)
 
-      } else {
-        let state = 'run'
-        while (state === 'run') {
-          let shortId = generateShortId(5)
+            } else {
+              let state = 'run'
+              while (state === 'run') {
+                let shortId = generateShortId(5)
 
-          await Shorten.findOne({ shortId })
-            .lean()
-            .then(async (findShortId) => {
-              if (findShortId === null) {
-                state = 'stop'
+                await Shorten.findOne({ shortId })
+                  .lean()
+                  .then(async (findShortId) => {
+                    if (findShortId === null) {
+                      state = 'stop'
 
-                await Shorten.create({ fullUrl, shortId })
-                  .then((newShortId) => {
-                    res.redirect(`/results/${newShortId.shortId}`)
+                      await Shorten.create({ fullUrl, shortId })
+                        .then((newShortId) => {
+                          res.redirect(`/results/${newShortId.shortId}`)
+                        })
+                        .catch((err) => {
+                          res.sendStatus(400)
+                          console.log(err)
+                        })
+                    }
                   })
                   .catch((err) => {
                     res.sendStatus(400)
                     console.log(err)
                   })
               }
-            })
-            .catch((err) => {
-              res.sendStatus(400)
-              console.log(err)
-            })
-        }
+            }
+          })
+          .catch((err) => {
+            res.sendStatus(400)
+            console.log(err)
+          })
       }
     })
     .catch((err) => {
-      res.sendStatus(400)
       console.log(err)
+      res.render('index', { UrlNotValid: true })
     })
 })
 

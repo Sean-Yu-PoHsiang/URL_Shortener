@@ -28,7 +28,6 @@ app.use(express.static('public'))
 
 app.use(routes)
 
-console.log(process.env.MONGODB_URI)
 
 app.listen(PORT, () => {
   console.log(`App is running on http://localhost:${PORT}`)
